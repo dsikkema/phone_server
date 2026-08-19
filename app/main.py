@@ -11,9 +11,6 @@ from fastapi.encoders import jsonable_encoder
 from datetime import datetime
 import os
 
-# instruction.json
-
-# lookup_addr.json
 
 logging.basicConfig(
     level=logging.INFO,
@@ -66,7 +63,7 @@ def get_mapbox_token():
     return tok
 
 async def lookup_address(req: dict):
-    # https://api.mapbox.com/search/geocode/v6/forward?q=3500+Cookstown+Dr+Austin+Tx&access_token=
+    # https://api.mapbox.com/search/geocode/v6/forward?q=123+Golucky+St+Happyville+TX&access_token=<tok>
     lookup_req = AddressLookupReq.model_validate(req)
     mapbox_tok = get_mapbox_token()
     addr = urllib.parse.quote_plus(lookup_req.address)
@@ -99,14 +96,11 @@ async def lookup_address(req: dict):
         raise HTTPException(status_code=500, detail='failed to decode nav response')
 
 async def navigation_directions(req: dict):
-    # http://api.mapbox.com/directions/v5/mapbox/driving/-97.71382563%2C30.4186%3B-97.7179538%2C30.397959?steps=true&access_token=
+    # http://api.mapbox.com/directions/v5/mapbox/driving/-93.33333333%2C33.3333%3B-33.3333333%2C30.333333?steps=true&access_token=
     # Note: exclude=toll
     # overview=false
     # geometries=false
 
-    with open('../instruction2.json', 'r') as f:
-        instr = f.read()
-        assert len(instr) > 0
     nav_req = NavigationRequest.model_validate(req)
 
     # lookup the coordinates for the searched-for address using the dedicated method for that
