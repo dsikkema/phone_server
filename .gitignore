@@ -1,0 +1,15 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+.envrc
+.env*
+
+# Virtual environments
+.venv
+instruction.json
+instruction2.json
+lookup_addr.json
