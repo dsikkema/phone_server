@@ -115,16 +115,12 @@ async def navigation_directions(req: dict):
 
     # routes[0].legs[0].steps[] | .distince, .maneuver.instruction
     try:
-        if False:
-            async with httpx.AsyncClient() as client:
-                resp = await client.get(url)
-            if resp.status_code != 200:
-                logging.error("got status %s from mapbox", resp.status_code)
-                raise HTTPException(status_code=500, detail='error getting nav directions')
-            logger.info('resp: %s', resp.text)
-        else:
-            resp = lambda: ...
-            resp.text = instr
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(url)
+        if resp.status_code != 200:
+            logging.error("got status %s from mapbox", resp.status_code)
+            raise HTTPException(status_code=500, detail='error getting nav directions')
+        logger.info('resp: %s', resp.text)
     except:
         logger.exception("error calling mapbox")
         raise HTTPException(status_code=500, detail='error getting nav directions')
