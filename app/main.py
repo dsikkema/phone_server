@@ -34,6 +34,9 @@ async def handle_validation_err(request: Request, exc: ValidationError):
 class OuterPayload(BaseModel):
     enc_content: str
 
+class OuterResponse(BaseModel):
+    enc_response: str
+
 class RouterPayload(BaseModel):
     path: str
     body: dict
@@ -173,7 +176,12 @@ async def routed_request_endpoint(body: OuterPayload):
     except Exception as e:
         logger.exception('error parsing req')
         raise HTTPException(status_code=400, detail='failed decoding body')
-    return await route(payload)
+    try:
+        resp = await route(payload)
+        return OuterResponse.model_validate({"enc_response": fernet.encrypt(resp.model_dump_json().encode())})
+    except Exception as e:
+        logger.exception('error formatting output')
+        raise HTTPException(status_code=400, detail='failed encoding output')
 @app.get("/health")
 async def health():
     return {"status": "ok"}
