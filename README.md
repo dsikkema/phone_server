@@ -1,1 +1,5 @@
+# local
 cd app && uv run uvicorn main:app --reload --host 0.0.0.0
+# prod
+cd app && uv run uvicorn main:app
+
