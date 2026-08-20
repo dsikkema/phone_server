@@ -27,7 +27,15 @@ async def handle_validation_err(request: Request, exc: ValidationError):
     return JSONResponse(
             status_code=400,
             content=jsonable_encoder({'detail': 'invalid request'})
-            )
+        )
+
+@app.exception_handler(Exception)
+async def handle_general_err(request: Request, exc: Exception):
+    logger.error("caugt exc: %s", exc)
+    return JSONResponse(
+            status_code=500,
+            content=jsonable_encoder({'detail': 'something went wrong'})
+        )
 
 class OuterPayload(BaseModel):
     enc_content: str
