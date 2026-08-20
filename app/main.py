@@ -17,12 +17,13 @@ logging.basicConfig(
     format="%(asctime)s [%(name)s] %(levelname)s: %(message)s",
 )
 logger = logging.getLogger(__name__)
+logger.info("The logger started!")
 
 app = FastAPI()
 
 @app.exception_handler(ValidationError)
 async def handle_validation_err(request: Request, exc: ValidationError):
-    logging.error("caugt exc: %s", exc)
+    logger.error("caugt exc: %s", exc)
     return JSONResponse(
             status_code=400,
             content=jsonable_encoder({'detail': 'invalid request'})
@@ -73,10 +74,10 @@ async def lookup_address(req: dict):
         async with httpx.AsyncClient() as client:
             resp = await client.get(url)
         if resp.status_code != 200:
-            logging.error("got status %s from mapbox", resp.status_code)
+            logger.error("got status %s from mapbox", resp.status_code)
             raise HTTPException(status_code=500, detail='error getting addr lookup')
     except:
-        logging.exception("error calling mapbox")
+        logger.exception("error calling mapbox")
         raise HTTPException(status_code=500, detail='error getting addr lookup')
 
 
@@ -92,7 +93,6 @@ async def lookup_address(req: dict):
             }    
         )
     except ValidationError as e:
-        logging.exception("error decoding nav resp")
         raise HTTPException(status_code=500, detail='failed to decode nav response')
 
 async def navigation_directions(req: dict):
@@ -118,7 +118,7 @@ async def navigation_directions(req: dict):
         async with httpx.AsyncClient() as client:
             resp = await client.get(url)
         if resp.status_code != 200:
-            logging.error("got status %s from mapbox", resp.status_code)
+            logger.error("got status %s from mapbox", resp.status_code)
             raise HTTPException(status_code=500, detail='error getting nav directions')
         logger.info('resp: %s', resp.text)
     except:
@@ -154,9 +154,9 @@ async def routed_request_endpoint(body: OuterPayload):
     >>> f.decrypt(token)
     b'A really secret message. Not for prying eyes.'
     """
-    key = os.environ.get('FERMET_KEY')
+    key = os.environ.get('FERNET_KEY')
     if not key:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500, detail='server not configured correctly')
 
     try:
         fernet = Fernet(key.encode())
